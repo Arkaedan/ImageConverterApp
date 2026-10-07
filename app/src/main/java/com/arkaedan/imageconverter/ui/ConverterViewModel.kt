@@ -50,7 +50,8 @@ sealed interface ItemStatus {
     data object Idle : ItemStatus
     data object Queued : ItemStatus
     data object Converting : ItemStatus
-    data class Done(val output: ConversionOutput) : ItemStatus
+    /** [settings] are the ones used, so the image is converted again if they change. */
+    data class Done(val output: ConversionOutput, val settings: ConversionSettings) : ItemStatus
     data class Failed(val reason: FailureReason) : ItemStatus
 }
 
@@ -76,10 +77,15 @@ data class ConverterUiState(
 ) {
     val isConverting get() = progress != null
     val isLoading get() = items.any { it.loadState == LoadState.Loading }
-    val convertibleCount get() = items.count { it.loadState == LoadState.Loaded }
+    /** Images that Convert would process: readable, and not already converted with these settings. */
+    val pendingItems get() = items.filter { it.needsConversion(settings) }
+    val pendingCount get() = items.count { it.needsConversion(settings) }
     val hasSvg get() = items.any { it.isSvg }
     val outputs get() = items.mapNotNull { (it.status as? ItemStatus.Done)?.output }
 }
+
+fun ImageItem.needsConversion(settings: ConversionSettings) =
+    loadState == LoadState.Loaded && (status as? ItemStatus.Done)?.settings != settings
 
 sealed interface UserMessage {
     data class Finished(val succeeded: Int, val failed: Int) : UserMessage
@@ -166,7 +172,7 @@ class ConverterViewModel(application: Application) : AndroidViewModel(applicatio
     fun convert() {
         if (conversionJob?.isActive == true) return
         val state = _uiState.value
-        val targets = state.items.filter { it.loadState == LoadState.Loaded }
+        val targets = state.pendingItems
         if (targets.isEmpty()) return
         val settings = state.settings
         val targetIds = targets.mapTo(HashSet()) { it.id }
@@ -186,7 +192,7 @@ class ConverterViewModel(application: Application) : AndroidViewModel(applicatio
                 updateItem(item.id) { it.copy(status = ItemStatus.Converting) }
                 val status = withContext(Dispatchers.Default + NonCancellable) {
                     try {
-                        ItemStatus.Done(converter.convert(item.uri, item.name, item.isSvg, settings))
+                        ItemStatus.Done(converter.convert(item.uri, item.name, item.isSvg, settings), settings)
                     } catch (e: OutOfMemoryError) {
                         ItemStatus.Failed(FailureReason.TooLarge)
                     } catch (e: Exception) {

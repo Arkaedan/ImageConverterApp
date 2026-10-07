@@ -48,7 +48,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -63,6 +62,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,7 +72,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -140,11 +142,11 @@ fun ConverterScreen(viewModel: ConverterViewModel) {
         onShare = { context.shareImages(state.outputs) },
     )
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     if (state.items.isNotEmpty()) {
@@ -339,8 +341,11 @@ private fun ImageRow(
                 )
                 val status = item.status
                 when {
-                    item.loadState == LoadState.Failed ->
-                        StatusText(stringResource(R.string.error_unreadable), MaterialTheme.colorScheme.error)
+                    item.loadState == LoadState.Failed -> StatusText(
+                        stringResource(R.string.error_unreadable),
+                        MaterialTheme.colorScheme.error,
+                        Icons.Filled.Warning,
+                    )
                     status is ItemStatus.Done -> StatusText(
                         stringResource(
                             R.string.converted_to,
@@ -348,26 +353,23 @@ private fun ImageRow(
                             Formatter.formatShortFileSize(context, status.output.sizeBytes),
                         ),
                         MaterialTheme.colorScheme.primary,
+                        Icons.Filled.CheckCircle,
                     )
                     status is ItemStatus.Failed ->
-                        StatusText(failureText(status.reason), MaterialTheme.colorScheme.error)
+                        StatusText(failureText(status.reason), MaterialTheme.colorScheme.error, Icons.Filled.Warning)
                 }
             }
             Spacer(Modifier.width(8.dp))
             Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                when (item.status) {
-                    ItemStatus.Converting -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 3.dp)
-                    is ItemStatus.Done -> Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    is ItemStatus.Failed -> Icon(Icons.Filled.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                    ItemStatus.Queued -> Unit
-                    ItemStatus.Idle -> if (canRemove) {
-                        IconButton(onClick = onRemove) {
-                            Icon(
-                                Icons.Filled.Close,
-                                contentDescription = stringResource(R.string.remove_image, item.name),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                when {
+                    item.status == ItemStatus.Converting ->
+                        CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 3.dp)
+                    canRemove -> IconButton(onClick = onRemove) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.remove_image, item.name),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }
@@ -376,15 +378,18 @@ private fun ImageRow(
 }
 
 @Composable
-private fun StatusText(text: String, color: androidx.compose.ui.graphics.Color) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelLarge,
-        color = color,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.padding(top = 2.dp),
-    )
+private fun StatusText(text: String, color: Color, icon: ImageVector) {
+    Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = color,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
 @Composable
@@ -567,13 +572,15 @@ private fun ConvertBar(state: ConverterUiState, actions: ScreenActions, modifier
                         Text(stringResource(R.string.share))
                     }
                 }
+                val pending = state.pendingCount
                 Button(
                     onClick = actions.onConvert,
-                    enabled = state.convertibleCount > 0 && !state.isLoading,
+                    enabled = pending > 0 && !state.isLoading,
                     modifier = Modifier.weight(1f).height(56.dp),
                 ) {
                     Text(
-                        text = pluralStringResource(R.plurals.convert_images, state.convertibleCount, state.convertibleCount),
+                        text = if (pending == 0 && state.outputs.isNotEmpty()) stringResource(R.string.all_converted)
+                        else pluralStringResource(R.plurals.convert_images, pending, pending),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
