@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Image Converter</string>
+
+    <!-- Empty state -->
+    <string name="empty_title">Convert images</string>
+    <string name="empty_body">Pick photos, graphics or SVGs and convert them to JPEG, PNG, WebP, HEIF, AVIF, GIF or BMP.</string>
+    <string name="choose_images">Choose images</string>
+
+    <!-- Top bar -->
+    <string name="add_images">Add images</string>
+    <string name="clear_all">Clear all</string>
+
+    <!-- Image list -->
+    <plurals name="images_header">
+        <item quantity="one">%d image</item>
+        <item quantity="other">%d images</item>
+    </plurals>
+    <string name="remove_image">Remove %1$s</string>
+    <string name="converted_to">Saved as %1$s · %2$s</string>
+    <string name="open_output">Open converted image</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Settings -->
+    <string name="section_output">Convert to</string>
+    <string name="format">Format</string>
+    <string name="quality">Quality</string>
+    <string name="lossless">Lossless</string>
+    <string name="lossless_summary">Larger files, no quality loss</string>
+    <string name="size">Size</string>
+    <string name="size_original">Original</string>
+    <string name="size_summary">Longest side in pixels. Photos are only ever scaled down.</string>
+    <string name="size_summary_svg">Longest side in pixels. Photos are only ever scaled down; SVGs are drawn at this size.</string>
+    <string name="format_unavailable">%1$s isn\'t supported by this device\'s encoders.</string>
+
+    <string name="format_desc_jpeg">Small files, no transparency. Best for photos.</string>
+    <string name="format_desc_png">Lossless with transparency. Best for graphics and screenshots.</string>
+    <string name="format_desc_webp">Smaller than JPEG and PNG, with transparency.</string>
+    <string name="format_desc_heif">Efficient format used by modern phone cameras. No transparency.</string>
+    <string name="format_desc_avif">The most efficient modern format. No transparency.</string>
+    <string name="format_desc_gif">Limited to 256 colours. Best for simple graphics.</string>
+    <string name="format_desc_bmp">Uncompressed, so files are very large.</string>
+
+    <!-- Convert bar -->
+    <plurals name="convert_images">
+        <item quantity="one">Convert %d image</item>
+        <item quantity="other">Convert %d images</item>
+    </plurals>
+    <string name="converting_progress">Converting %1$d of %2$d…</string>
+    <string name="cancel">Cancel</string>
+    <string name="share">Share</string>
+
+    <!-- Results -->
+    <plurals name="result_success">
+        <item quantity="one">Saved %d image to Pictures/Image Converter</item>
+        <item quantity="other">Saved %d images to Pictures/Image Converter</item>
+    </plurals>
+    <string name="result_partial">Converted: %1$d · Failed: %2$d</string>
+    <string name="result_cancelled">Conversion cancelled</string>
+    <string name="share_chooser_title">Share converted images</string>
+    <string name="no_app_to_open">No app can open this image</string>
+
+    <!-- Errors -->
+    <string name="error_too_large">Image is too large to convert</string>
+    <string name="error_unreadable">Couldn\'t read this image</string>
+    <string name="error_generic">Conversion failed: %1$s</string>
+</resources>
