@@ -501,7 +501,7 @@ private fun SettingsCard(state: ConverterUiState, actions: ScreenActions) {
                             selected = size == settings.size,
                             onClick = { actions.onSize(size) },
                             shape = SegmentedButtonDefaults.itemShape(index, OutputSize.entries.size),
-                            enabled = enabled,
+                            enabled = enabled && state.isSizeUseful(size),
                             icon = {},
                             label = {
                                 Text(

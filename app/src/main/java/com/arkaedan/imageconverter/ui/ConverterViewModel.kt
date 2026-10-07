@@ -18,6 +18,7 @@ import com.arkaedan.imageconverter.conversion.ImageLoader
 import com.arkaedan.imageconverter.conversion.OutputSize
 import com.caverock.androidsvg.SVGParseException
 import java.io.FileNotFoundException
+import kotlin.math.max
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -81,6 +82,19 @@ data class ConverterUiState(
     val pendingItems get() = items.filter { it.needsConversion(settings) }
     val pendingCount get() = items.count { it.needsConversion(settings) }
     val hasSvg get() = items.any { it.isSvg }
+
+    /**
+     * Whether [size] would change at least one image. Raster images are never enlarged, so a limit at or
+     * above every photo's longest side does nothing; SVGs are drawn at any size, so they keep all sizes
+     * useful. Images still loading count as useful until their dimensions are known.
+     */
+    fun isSizeUseful(size: OutputSize): Boolean {
+        val limit = size.longEdge ?: return true
+        return items.any { item ->
+            val info = item.info
+            item.isSvg || item.loadState == LoadState.Loading || (info != null && max(info.width, info.height) > limit)
+        }
+    }
     val outputs get() = items.mapNotNull { (it.status as? ItemStatus.Done)?.output }
 }
 

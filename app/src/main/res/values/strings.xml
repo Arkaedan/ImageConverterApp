@@ -29,8 +29,8 @@
     <string name="lossless_summary">Larger files, no quality loss</string>
     <string name="size">Size</string>
     <string name="size_original">Original</string>
-    <string name="size_summary">Longest side in pixels. Photos are only ever scaled down.</string>
-    <string name="size_summary_svg">Longest side in pixels. Photos are only ever scaled down; SVGs are drawn at this size.</string>
+    <string name="size_summary">Maximum length of the longest side, in pixels. Sizes that wouldn\'t shrink any of your images are greyed out.</string>
+    <string name="size_summary_svg">Maximum length of the longest side, in pixels. Photos are never enlarged; SVGs are drawn at exactly this size.</string>
     <string name="format_unavailable">%1$s isn\'t supported by this device\'s encoders.</string>
 
     <string name="format_desc_jpeg">Small files, no transparency. Best for photos.</string>
