@@ -10,6 +10,8 @@
     <!-- Top bar -->
     <string name="add_images">Add images</string>
     <string name="clear_all">Clear all</string>
+    <string name="more_options">More options</string>
+    <string name="privacy_policy">Privacy policy</string>
 
     <!-- Image list -->
     <plurals name="images_header">
@@ -60,6 +62,7 @@
     <string name="result_cancelled">Conversion cancelled</string>
     <string name="share_chooser_title">Share converted images</string>
     <string name="no_app_to_open">No app can open this image</string>
+    <string name="no_app_to_open_link">No app can open this link</string>
 
     <!-- Errors -->
     <string name="error_too_large">Image is too large to convert</string>

@@ -47,6 +47,8 @@ app/src/main/java/com/arkaedan/imageconverter/
     ConverterScreen.kt         The single Compose screen (one pane on phones, two panes >= 720dp)
     theme/Theme.kt             Dynamic colour theme
 app/src/test/                  JVM unit tests (no Android framework; use ArrayPixelSource)
+docs/privacy/                  Privacy policy, served by GitHub Pages; the app's overflow menu links to it
+store-listing/                 Play Store icon, feature graphic (rendered from the HTML files) and screenshots
 ```
 
 ## How encoding works

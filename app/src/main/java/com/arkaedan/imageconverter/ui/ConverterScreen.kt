@@ -37,12 +37,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -67,8 +70,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -85,6 +90,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arkaedan.imageconverter.R
 import com.arkaedan.imageconverter.conversion.ConversionOutput
@@ -95,6 +101,9 @@ import kotlinx.coroutines.launch
 
 /** Window width from which the image list and the settings sit side by side (tablets, landscape). */
 private val TwoPaneMinWidth = 720.dp
+
+/** Hosted from `docs/privacy` via GitHub Pages; Google Play requires the app to link to it. */
+private const val PRIVACY_POLICY_URL = "https://arkaedan.github.io/ImageConverterApp/privacy/"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,6 +166,11 @@ fun ConverterScreen(viewModel: ConverterViewModel) {
                             Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.clear_all))
                         }
                     }
+                    OverflowMenu(
+                        onPrivacyPolicy = {
+                            if (!context.openLink(PRIVACY_POLICY_URL)) showMessage(resources.getString(R.string.no_app_to_open_link))
+                        },
+                    )
                 },
                 scrollBehavior = scrollBehavior,
             )
@@ -185,6 +199,25 @@ private class ScreenActions(
     val onCancel: () -> Unit,
     val onShare: () -> Unit,
 )
+
+@Composable
+private fun OverflowMenu(onPrivacyPolicy: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.more_options))
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.privacy_policy)) },
+                onClick = {
+                    expanded = false
+                    onPrivacyPolicy()
+                },
+            )
+        }
+    }
+}
 
 @Composable
 private fun EmptyState(onPick: () -> Unit, modifier: Modifier = Modifier) {
@@ -599,6 +632,13 @@ private fun Context.openImage(output: ConversionOutput): Boolean {
     } catch (_: ActivityNotFoundException) {
         false
     }
+}
+
+private fun Context.openLink(url: String): Boolean = try {
+    startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+    true
+} catch (_: ActivityNotFoundException) {
+    false
 }
 
 private fun Context.shareImages(outputs: List<ConversionOutput>) {

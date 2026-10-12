@@ -81,6 +81,12 @@ Console:
 2. Connect it and accept the debugging prompt. `adb devices` should list it.
 3. Run `./gradlew installRelease`, or `adb install -r app/build/outputs/apk/release/app-release.apk`.
 
+## Privacy
+
+The app collects no data and has no internet access. The privacy policy lives in
+[docs/privacy](docs/privacy/index.html) and is published with GitHub Pages at
+<https://arkaedan.github.io/ImageConverterApp/privacy/>.
+
 ## Project structure
 
 See [AGENTS.md](AGENTS.md) for an overview of the code layout and conventions.
