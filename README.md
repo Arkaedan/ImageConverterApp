@@ -90,3 +90,7 @@ The app collects no data and has no internet access. The privacy policy lives in
 ## Project structure
 
 See [AGENTS.md](AGENTS.md) for an overview of the code layout and conventions.
+
+## Licence
+
+Released under the [MIT License](LICENSE).
