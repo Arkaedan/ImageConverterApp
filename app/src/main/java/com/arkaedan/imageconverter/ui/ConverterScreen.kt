@@ -105,6 +105,9 @@ private val TwoPaneMinWidth = 720.dp
 /** Hosted from `docs/privacy` via GitHub Pages; Google Play requires the app to link to it. */
 private const val PRIVACY_POLICY_URL = "https://arkaedan.github.io/ImageConverterApp/privacy/"
 
+/** Hosted from `docs/licenses`; lists the bundled libraries and their licence texts. */
+private const val LICENSES_URL = "https://arkaedan.github.io/ImageConverterApp/licenses/"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConverterScreen(viewModel: ConverterViewModel) {
@@ -167,8 +170,8 @@ fun ConverterScreen(viewModel: ConverterViewModel) {
                         }
                     }
                     OverflowMenu(
-                        onPrivacyPolicy = {
-                            if (!context.openLink(PRIVACY_POLICY_URL)) showMessage(resources.getString(R.string.no_app_to_open_link))
+                        onOpenLink = { url ->
+                            if (!context.openLink(url)) showMessage(resources.getString(R.string.no_app_to_open_link))
                         },
                     )
                 },
@@ -201,20 +204,23 @@ private class ScreenActions(
 )
 
 @Composable
-private fun OverflowMenu(onPrivacyPolicy: () -> Unit) {
+private fun OverflowMenu(onOpenLink: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { expanded = true }) {
             Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.more_options))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.privacy_policy)) },
-                onClick = {
-                    expanded = false
-                    onPrivacyPolicy()
-                },
-            )
+            listOf(R.string.privacy_policy to PRIVACY_POLICY_URL, R.string.open_source_licences to LICENSES_URL)
+                .forEach { (label, url) ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(label)) },
+                        onClick = {
+                            expanded = false
+                            onOpenLink(url)
+                        },
+                    )
+                }
         }
     }
 }

@@ -48,6 +48,7 @@ app/src/main/java/com/arkaedan/imageconverter/
     theme/Theme.kt             Dynamic colour theme
 app/src/test/                  JVM unit tests (no Android framework; use ArrayPixelSource)
 docs/privacy/                  Privacy policy, served by GitHub Pages; the app's overflow menu links to it
+docs/licenses/                 Open source licences page (update it when adding a dependency), also linked from the menu
 store-listing/                 Play Store icon, feature graphic (rendered from the HTML files) and screenshots
 ```
 
