@@ -47,8 +47,33 @@ Then:
 ./gradlew testDebugUnitTest  # unit tests
 ```
 
-Release builds are minified and signed with the debug key so they can be sideloaded. Use your own
-signing config before distributing.
+Release builds are minified. They are signed with the upload key when `keystore.properties` exists
+(see below), and with the debug key otherwise so they can still be sideloaded.
+
+## Publishing
+
+The Play Store rejects debug-signed builds, so create an upload key once and keep a backup of it outside
+the repo:
+
+```bash
+keytool -genkeypair -v -keystore E:/keys/imageconverter-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Then create `keystore.properties` in the repo root (it is git-ignored):
+
+```properties
+storeFile=E:/keys/imageconverter-upload.jks
+storePassword=<keystore password>
+keyAlias=upload
+keyPassword=<key password>
+```
+
+Bump `versionCode` in `app/build.gradle.kts` for every upload, then build the bundle to upload to Play
+Console:
+
+```bash
+./gradlew bundleRelease      # app/build/outputs/bundle/release/app-release.aab
+```
 
 ## Installing on a device
 

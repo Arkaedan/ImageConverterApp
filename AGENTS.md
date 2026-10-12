@@ -22,7 +22,8 @@ Run from the repo root. The build needs JDK 17+ (`JAVA_HOME`) and an Android SDK
 ./gradlew testDebugUnitTest   # JVM unit tests (encoders, helpers)
 ./gradlew lintDebug           # Android lint; keep it clean
 ./gradlew assembleDebug       # app/build/outputs/apk/debug/app-debug.apk
-./gradlew assembleRelease     # minified, signed with the debug key for sideloading
+./gradlew assembleRelease     # minified; upload key if keystore.properties exists, else debug key
+./gradlew bundleRelease       # app/build/outputs/bundle/release/app-release.aab for Play Console
 ./gradlew installRelease      # install on the connected device (adb)
 ```
 
